@@ -1,0 +1,104 @@
+import { useState } from "react";
+import { Line } from "react-chartjs-2";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function StocksPredictorApp() {
+  const [data, setData] = useState([]);
+  const [model, setModel] = useState("Linear Regression");
+
+  const handlePredict = () => {
+    // Dummy prediction data
+    const results = [100, 120, 140, 160, 180, 200];
+    setData(results);
+  };
+
+  const chartData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        label: "Predicted Stock Price",
+        data: data,
+        borderColor: "#4f46e5",
+        fill: false,
+      },
+    ],
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      {/* Hero Section */}
+      <section className="text-center py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-5xl font-bold mb-4"
+        >
+          AI-Powered Stock Predictor
+        </motion.h1>
+        <p className="text-lg max-w-2xl mx-auto">
+          Forecast stock prices using AI and visualize predictions instantly.
+        </p>
+        <div className="mt-6">
+          <Button className="px-6 py-3 text-lg">Get Started</Button>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 px-6 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {[
+          { title: "Easy Input", desc: "Upload or enter stock data quickly." },
+          { title: "Multiple Models", desc: "Compare Linear Regression, ARIMA, and more." },
+          { title: "Data Visualization", desc: "Charts powered by Chart.js for clarity." },
+        ].map((f, i) => (
+          <Card key={i} className="shadow-lg rounded-2xl">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+              <p className="text-gray-600">{f.desc}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* Prediction Section */}
+      <section className="py-16 bg-white px-6 max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl font-bold mb-6">Try a Prediction</h2>
+        <div className="flex justify-center mb-6 space-x-4">
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="p-2 border rounded-lg"
+          >
+            <option>Linear Regression</option>
+            <option>ARIMA</option>
+            <option>LSTM</option>
+          </select>
+          <Button onClick={handlePredict}>Predict</Button>
+        </div>
+
+        {data.length > 0 && (
+          <div className="bg-gray-100 p-6 rounded-xl shadow">
+            <Line data={chartData} />
+          </div>
+        )}
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-center">
+        <h2 className="text-4xl font-bold mb-4">Start Predicting Smarter</h2>
+        <p className="max-w-xl mx-auto mb-6">
+          Gain insights into future stock movements with simple ML tools. Perfect for learners and investors.
+        </p>
+        <Button className="px-6 py-3 text-lg bg-white text-purple-700 hover:bg-gray-200">
+          Sign Up Now
+        </Button>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 bg-gray-900 text-gray-400 text-center">
+        <p>© 2025 Stocks Predictor App. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
