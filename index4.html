@@ -1,0 +1,55 @@
+import streamlit as st
+import re
+from PyPDF2 import PdfReader
+import docx
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# ----------------- Helper Functions -----------------
+
+def extract_text_from_pdf(file):
+    reader = PdfReader(file)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
+
+def extract_text_from_docx(file):
+    doc = docx.Document(file)
+    text = ""
+    for para in doc.paragraphs:
+        text += para.text + "\n"
+    return text
+
+def clean_text(text):
+    return re.sub(r'\s+', ' ', text.strip().lower())
+
+def calculate_similarity(resume_text, job_desc):
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform([resume_text, job_desc])
+    similarity = cosine_similarity(vectors[0], vectors[1])
+    return similarity[0][0] * 100  # Percentage
+
+# ----------------- Streamlit App -----------------
+
+st.set_page_config(page_title="AI Resume Screener", layout="wide")
+
+st.title("📄 AI Resume Screener")
+st.write("Upload your resume and compare it with a job description.")
+
+job_desc = st.text_area("✍️ Paste Job Description Here:")
+
+uploaded_file = st.file_uploader("📤 Upload Resume (PDF/DOCX/TXT)", type=["pdf", "docx", "txt"])
+
+if uploaded_file and job_desc:
+    if uploaded_file.type == "application/pdf":
+        resume_text = extract_text_from_pdf(uploaded_file)
+    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        resume_text = extract_text_from_docx(uploaded_file)
+    else:
+        resume_text = uploaded_file.read().decode("utf-8")
+
+    resume_text = clean_text(resume_text)
+    job_desc = clean_text(job_desc)
+
+    score = calculate
